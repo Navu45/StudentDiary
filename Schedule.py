@@ -1,3 +1,4 @@
+import openpyxl
 from bs4 import BeautifulSoup
 import re
 import requests
@@ -31,17 +32,17 @@ def get_schedule_from_mirea():
                 f.close()
 
     for n in range(1, 4):
-        book = xlrd.open_workbook('file{}.xlsx'.format(n))
-        sheet = book.sheet_by_index(0)
+        book = openpyxl.load_workbook('file{}.xlsx'.format(n))
+        sheet = book.active
 
-        num_cols = sheet.ncols
-        num_rows = sheet.nrows
+        num_cols = sheet.max_column
+        num_rows = sheet.max_row
 
         groups_list = []
         groups = {}
         week_days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-        for col_index in range(num_cols):
-            group_cell = str(sheet.cell(1, col_index).value)
+        for col_index in range(1, num_cols + 1):
+            group_cell = str(sheet.cell(2, col_index).value)
             if re.search(r'\w{4}-\d\d-\d\d', group_cell):
                 groups_list.append(group_cell)
                 week = {'MON': None, 'TUE': None, 'WED': None, 'THU': None, 'FRI': None, 'SAT': None}
@@ -49,11 +50,11 @@ def get_schedule_from_mirea():
                     day = [[], [], [], [], [], []]
                     for i in range(6):
                         for j in range(2):
-                            subject = sheet.cell(3 + j + i * 2 + k * 12, col_index).value
-                            lesson_type = sheet.cell(3 + j + i * 2 + k * 12, col_index + 1).value
-                            lecturer = sheet.cell(3 + j + i * 2 + k * 12, col_index + 2).value
-                            classroom = sheet.cell(3 + j + i * 2 + k * 12, col_index + 3).value
-                            url = sheet.cell(3 + j + i * 2 + k * 12, col_index + 4).value
+                            subject = sheet.cell(4 + j + i * 2 + k * 12, col_index).value
+                            lesson_type = sheet.cell(4 + j + i * 2 + k * 12, col_index + 1).value
+                            lecturer = sheet.cell(4 + j + i * 2 + k * 12, col_index + 2).value
+                            classroom = sheet.cell(4 + j + i * 2 + k * 12, col_index + 3).value
+                            url = sheet.cell(4 + j + i * 2 + k * 12, col_index + 4).value
                             lesson = {'subject': subject, 'lesson_type': lesson_type, 'lecturer': lecturer,
                                       'classroom': classroom, 'url': url}
                             day[i].append(lesson)
@@ -127,4 +128,4 @@ def show_schedule_for_day_on_week(group, ind):
     return schedule
 
 get_schedule_from_mirea()
-print(show_schedule_for_day_on_week('ИКБО-03-19',3))
+
