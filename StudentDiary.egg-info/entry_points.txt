@@ -1,0 +1,3 @@
+[gui_scripts]
+diary = diary:run_app
+

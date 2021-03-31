@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+StudentDiary.egg-info/PKG-INFO
+StudentDiary.egg-info/SOURCES.txt
+StudentDiary.egg-info/dependency_links.txt
+StudentDiary.egg-info/entry_points.txt
+StudentDiary.egg-info/requires.txt
+StudentDiary.egg-info/top_level.txt
+diary/__init__.py
+diary/__main__.py
+diary/schedule.py

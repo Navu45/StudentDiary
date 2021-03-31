@@ -1,0 +1,5 @@
+requests
+openpyxl
+importlib
+python_version>='3.5'
+beautifulsoup4
