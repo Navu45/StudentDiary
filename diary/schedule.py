@@ -69,6 +69,7 @@ def get_schedule_from_mirea():
 
 def show_schedule_for_day(group, d):
     """Парсит расписаниие json файл и возвращает расписание определенного дня в str.
+
             Параметры:
                     group (str): студенческая группа
                     d (datetime.datetime): дата
@@ -116,6 +117,7 @@ def show_schedule_for_day(group, d):
 
 def show_schedule_for_week(group, d):
     """Парсит расписаниие json файл и возвращает расписание на определенную неделю в str.
+
                 Параметры:
                         group (str): студенческая группа
                         d (datetime.datetime): дата
