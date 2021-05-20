@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 import openpyxl
 from bs4 import BeautifulSoup
 import re
@@ -71,6 +69,7 @@ def get_schedule_from_mirea():
 
 def show_schedule_for_day(group, d):
     """Парсит расписаниие json файл и возвращает расписание определенного дня в str.
+
             Параметры:
                     group (str): студенческая группа
                     d (datetime.datetime): дата
@@ -118,6 +117,7 @@ def show_schedule_for_day(group, d):
 
 def show_schedule_for_week(group, d):
     """Парсит расписаниие json файл и возвращает расписание на определенную неделю в str.
+
                 Параметры:
                         group (str): студенческая группа
                         d (datetime.datetime): дата
@@ -125,13 +125,20 @@ def show_schedule_for_week(group, d):
                 Возвращаемое значение:
                         schedule (str): расписание на неделю
                     """
+
     d1 = d - datetime.timedelta(days=d.weekday())
+    schedule_list = []
     schedule = ''
     week_days = ['понедельник', 'вторник', 'среду', 'четверг', 'пятница', 'субботу']
     months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября',
               'декабря']
     for i in range(6):
-        schedule += 'Расписание на ' + week_days[i] + ' ' + str(d1.day) + ' ' + months[d1.month - 1] + ':\n'
+        schedule += 'Расписание на ' + week_days[i]  + ':\n'
         schedule += show_schedule_for_day(group, d1)
         d1 += datetime.timedelta(days=1)
-    return schedule
+        schedule_list.append(schedule)
+        schedule = ''
+    return schedule_list
+
+# get_schedule_from_mirea()
+# print(show_schedule_for_day("ИКБО-03-19", datetime.datetime.today()))
