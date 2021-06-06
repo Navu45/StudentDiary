@@ -1,5 +1,7 @@
+import pickle
 import tkinter.ttk as ttk
 from tkinter import *
+from tkinter import messagebox
 
 from diary.homework import Subjects
 from diary.schedule import *
@@ -8,12 +10,10 @@ from tkinter.simpledialog import askstring
 
 
 def run_app():
-    """Запускает десктопное приложение
-
-                """
+    """Запускает десктопное приложение"""
 
     def clicked1():
-        print(str(txt1.get()))
+        # print(str(txt1.get()))
         t = str(txt1.get()).upper()
         Label(tab1, text='Группа : ' + t, font='Arial 14', bg='white').grid(column=2, row=0, padx=4, pady=3,
                                                                             sticky='nw')
@@ -87,16 +87,51 @@ def run_app():
     notes = Notes(tab3)
     subjects = Subjects(tab2)
 
+    f = open('notes.pickle', 'ab')
+    f.close()
+    f = open('homework.pickle', 'ab')
+    f.close()
+    f = open('subjects.pickle', 'ab')
+    f.close()
+
     set_notes_page(notes, window)
     set_homework_page(subjects, window)
     tab_control.pack(expand=True, fill=BOTH)
+
+    def on_closing():
+        if messagebox.askokcancel("Выход", "Вы хотите выйти?"):
+            with open('notes.pickle', 'wb') as f_notes:
+                pickle.dump(notes.notes, f_notes)
+            with open('homework.pickle', 'wb') as f_homework:
+                pickle.dump(subjects.tasks, f_homework)
+            with open('subjects.pickle', 'wb') as f_subjects:
+                pickle.dump([button.cget('text') for button in subjects.subject_list], f_subjects)
+            window.destroy()
+
+    window.protocol("WM_DELETE_WINDOW", on_closing)
     window.mainloop()
 
 
 def set_homework_page(subjects, window: Tk):
+
+    with open('subjects.pickle', 'rb') as f:
+        try:
+            subject_list = pickle.load(f)
+            for subject in subject_list:
+                subjects.add_subject(subject)
+        except Exception:
+            pass
+    with open('homework.pickle', 'rb') as f:
+        try:
+            homework = pickle.load(f)
+            for task in homework:
+                subjects.add_homework(task.cget('text'))
+        except Exception:
+            pass
+
     def add_tag():
         subject_name = str(askstring("Создание тега", "Введите название предмета (тег)"))
-        if subject_name is not None and not subject_name.isspace() and subject_name.isalnum():
+        if subject_name != 'None' and subject_name.isalnum():
             subjects.add_subject(subject_name)
 
     def add_homework():
@@ -112,6 +147,14 @@ def set_homework_page(subjects, window: Tk):
 
 
 def set_notes_page(notes, window: Tk):
+    with open('notes.pickle', 'rb') as f:
+        try:
+            note_list = pickle.load(f)
+            for note in note_list:
+                notes.add_note(note.text)
+        except Exception:
+            pass
+
     def add_note():
         note_text = str(ask_dialog("Создание заметки", "Введите текст заметки", window))
         notes.add_note(note_text)

@@ -1,3 +1,4 @@
+from tkinter import messagebox
 from tkinter.simpledialog import askstring
 from diary.notes import make_less, Note, TextDialog
 from tkinter import *
@@ -18,7 +19,13 @@ class Subjects:
                     padx=4,
                     pady=3)
         button.bind("<Button-1>", self.check)
+        button.bind("<Button-3>", self.edit_subject)
         self.subject_list.append(button)
+
+    def edit_subject(self, event):
+        if messagebox.askokcancel("Удаление предмета", "Вы действительно хотите удалить данный предмет?"):
+            self.subject_list.remove(event.widget)
+            event.widget.destroy()
 
     def check(self, event):
         if event.widget['relief'] == 'groove':
@@ -46,11 +53,14 @@ class Subjects:
     def edit_homework(self, event):
         for task in self.tasks:
             if task.label_text == event.widget["text"]:
-                d = TextDialog("Редактирование ДЗ", task.homework_subjects, edit=task.text,
+                d = TextDialog("Редактирование ДЗ", task.homework_subjects,widget=event.widget, edit=task.text,
                                parent=self.tab)
-                task.text = str(d.result)
-                task.label_text = make_less(task.text)
-                event.widget["text"] = task.label_text
+                if not d.result.isspace():
+                    task.text = str(d.result)
+                    task.label_text = make_less(task.text)
+                    event.widget["text"] = task.label_text
+                else:
+                    self.tasks.remove(task)
                 break
 
 

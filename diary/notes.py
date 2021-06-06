@@ -1,16 +1,18 @@
-import tkinter
+from tkinter import messagebox
 from tkinter.simpledialog import Dialog
 from tkinter import *
 
 
 class TextDialog(Dialog):
     def __init__(self, title, prompt,
+                 widget=None,
                  edit=None,
                  parent=None):
         self.text = None
         self.prompt = prompt
         self.parent = parent
         self.edit_text = edit
+        self.widget = widget
 
         Dialog.__init__(self, parent, title)
 
@@ -21,6 +23,9 @@ class TextDialog(Dialog):
         w.pack(side=LEFT, padx=5, pady=5)
         w = Button(box, text="Cancel", width=10, command=self.cancel)
         w.pack(side=LEFT, padx=5, pady=5)
+        if self.widget is not None:
+            w = Button(box, text="Delete", width=10, command=self.delete)
+            w.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Control-Return>", self.ok)
         self.bind("<Escape>", self.cancel)
@@ -29,6 +34,12 @@ class TextDialog(Dialog):
 
     def destroy(self):
         Dialog.destroy(self)
+
+    def delete(self):
+        if messagebox.askokcancel("Удаление", "Вы действительно хотите удалить данную запись?"):
+            self.widget.destroy()
+            self.result = ' '
+            Dialog.destroy(self)
 
     def body(self, master):
         w = Label(master, text=self.prompt, justify=LEFT)
@@ -74,11 +85,15 @@ class Notes:
     def edit_note(self, event):
         for note in self.notes:
             if note.label_text == event.widget["text"]:
-                d = TextDialog("Редактирование заметки", "Введите текст заметки", edit=note.text,
+                d = TextDialog("Редактирование заметки", "Введите текст заметки", event.widget, edit=note.text,
                                parent=self.tab)
-                note.text = str(d.result)
-                note.label_text = make_less(note.text)
-                event.widget["text"] = note.label_text
+                if not d.result.isspace():
+                    note.text = str(d.result)
+                    note.label_text = make_less(note.text)
+                    event.widget["text"] = note.label_text
+                else:
+                    self.notes.remove(note)
+                    self.notes_n -= 1
                 break
 
 
